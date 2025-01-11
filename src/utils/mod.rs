@@ -4,3 +4,4 @@ pub mod logger;
 pub mod package_json;
 pub mod packages;
 pub mod path;
+pub mod rename_project;

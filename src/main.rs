@@ -9,7 +9,7 @@ use std::process;
 
 use cli::CLiConfig;
 use installers::installer::PackageInstaller;
-use utils::logger::Logger;
+use utils::{logger::Logger, rename_project::rename_frontend_project};
 
 fn main() {
     let config = match CLiConfig::run() {
@@ -24,4 +24,10 @@ fn main() {
         Logger::error(&format!("Error scafolding {} {}", config.project_name, e));
         process::exit(1)
     }
+
+    if let Err(e) = rename_frontend_project(&config.project_name)  {
+        Logger::error(&format!("Error renaming project {} {}", config.project_name, e));
+        process::exit(1)
+    }
+    
 }

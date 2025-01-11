@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 pub struct PackageJson {
     pub name: String,
     pub version: String,
+    pub private: String,
     #[serde(rename = "type")]
     pub package_type: String,
-    pub private: bool,
     pub scripts: IndexMap<String, String>,
     pub dependencies: IndexMap<String, String>,
     #[serde(rename = "devDependencies")]
