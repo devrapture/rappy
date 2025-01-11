@@ -1,8 +1,8 @@
-use std::fmt::Display;
+use std::{fmt::Display, path::PathBuf};
 
 use crate::{
     constant::{APP_NAME_PATTERN, TITLE_CASE, YES_NO_OPTIONS},
-    utils::get_theme::get_theme,
+    utils::{get_theme::get_theme, packages::PackagesEnum, path::PathConfig},
 };
 use anyhow::{Ok, Result};
 use dialoguer::{theme::ColorfulTheme, Input, Select};
@@ -31,6 +31,8 @@ pub struct CLiConfig {
     pub initialize_git: bool,
     pub app_router: bool,
     pub project_type: usize,
+    pub packages: Vec<PackagesEnum>,
+    pub project_dir: PathBuf,
 }
 
 impl CLiConfig {
@@ -39,12 +41,14 @@ impl CLiConfig {
         display_banner();
 
         let config = Self {
-            theme:get_theme(),
+            theme: get_theme(),
             project_name: String::new(),
             styling_with_tailwind: false,
             initialize_git: false,
             app_router: false,
             project_type: 0,
+            packages: Vec::new(),
+            project_dir: PathBuf::new(),
         };
 
         let project_name = config.get_project_name()?;
@@ -53,16 +57,27 @@ impl CLiConfig {
             config.prompt_yes_no("Will you be using Tailwind CSS for styling?")?;
         let app_router = config.prompt_yes_no("Would you like to use Next.js App Router?")?;
         let project_type = config.choose_project_type()?;
+        let project_dir = PathConfig::new(&project_name)?;
         let initialize_git =
             config.prompt_yes_no("Should we initialize a Git repository and stage the changes?")?;
 
+        let mut packages = Vec::new();
+        if styling_with_tailwind {
+            packages.push(PackagesEnum::Tailwind);
+        }
+        if app_router {
+            packages.push(PackagesEnum::AppRouter);
+        }
+
         Ok(Self {
-            theme:get_theme(),
+            theme: get_theme(),
             project_name,
             styling_with_tailwind,
             initialize_git,
             app_router,
             project_type,
+            packages,
+            project_dir,
         })
     }
 
