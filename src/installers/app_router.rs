@@ -14,7 +14,7 @@ impl AppRouterConfig {
         let current_dir = env::current_dir()?;
         Ok(Self {
             template_root: current_dir.join(constant::APP_ROUTER_TEMPLATE_DIR),
-            project_root: project_dir.join("next.config.js"),
+            project_root: project_dir.join("packages/frontend/next.config.js"),
         })
     }
 

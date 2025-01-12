@@ -17,7 +17,7 @@ impl TailwindConfig {
         let current_dir = env::current_dir()?;
         Ok(Self {
             template_root: current_dir.join(constant::EXTRAS_TEMPLATE_DIR),
-            project_root: project_path.to_path_buf(),
+            project_root: project_path.join("packages/frontend").to_path_buf(),
         })
     }
     pub fn add_package_dependency(&self) -> Result<()> {

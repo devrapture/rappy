@@ -5,3 +5,5 @@ pub mod package_json;
 pub mod packages;
 pub mod path;
 pub mod rename_project;
+pub mod copy_file;
+pub mod select_boiler_plate;

@@ -2,14 +2,16 @@ mod cli;
 mod constant;
 mod scafold_project;
 mod utils;
+mod install_packages;
 
 pub mod installers;
 
 use std::process;
 
 use cli::CLiConfig;
+use install_packages::install_frontend_packages;
 use installers::installer::PackageInstaller;
-use utils::{logger::Logger, rename_project::rename_frontend_project};
+use utils::{logger::Logger, rename_project::{rename_frontend_project, rename_root_project}};
 
 fn main() {
     let config = match CLiConfig::run() {
@@ -29,5 +31,15 @@ fn main() {
         Logger::error(&format!("Error renaming project {} {}", config.project_name, e));
         process::exit(1)
     }
-    
+
+    if let Err(e) = rename_root_project(&config.project_name)  {
+        Logger::error(&format!("Error renaming root {} {}", config.project_name, e));
+        process::exit(1)
+    }
+
+
+    if let Err(e) =  install_frontend_packages(&use_packages, &config.project_dir) {
+        Logger::error(&format!("Error installing frontend packages {}", e));
+        process::exit(1)
+    }    
 }
