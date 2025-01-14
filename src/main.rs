@@ -1,5 +1,6 @@
 mod cli;
 mod constant;
+mod git;
 mod install_packages;
 mod scafold_hardhat;
 mod scafold_project;
@@ -11,6 +12,7 @@ use std::process;
 
 use anyhow::{Ok, Result};
 use cli::CLiConfig;
+use git::initialize_git;
 use install_packages::install_frontend_packages;
 use installers::{hardhat_prettier::config_hardhat, installer::PackageInstaller};
 use scafold_hardhat::scafold_hardhat;
@@ -40,6 +42,9 @@ fn run() -> Result<()> {
             config_hardhat(&config.project_dir)?;
         }
         _ => unreachable!(),
+    }
+    if config.initialize_git {
+        initialize_git(&config.project_dir)?;
     }
     Ok(())
 }
