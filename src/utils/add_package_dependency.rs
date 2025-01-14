@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::installers::dependency_versions::get_dependency_version_map;
 
-use super::package_json::PackageJson;
+use super::package_json::{HardhatPackageJson, PackageJson};
 
 struct AddPackageDependency<'a> {
     dependencies: Vec<&'a str>,
@@ -50,6 +50,36 @@ impl<'a> AddPackageDependency<'a> {
 
         Ok(())
     }
+
+    pub fn add_hardhat_dependency(&self) -> Result<()> {
+        let package_json_path = self.project_dir.join("package.json");
+        let content = fs::read_to_string(&package_json_path)?;
+
+        let mut package_json: HardhatPackageJson = serde_json::from_str(&content)?;
+
+        let package_dependencies = get_dependency_version_map();
+        for dep in &self.dependencies {
+            let version = package_dependencies.get(dep);
+            if let Some(ver) = version {
+                if self.dev_mode {
+                    package_json
+                        .dev_dependencies
+                        .insert(dep.to_string(), ver.to_string());
+                } else {
+                    package_json
+                        .dependencies
+                        .insert(dep.to_string(), ver.to_string());
+                }
+            }
+        }
+
+        fs::write(
+            &package_json_path,
+            serde_json::to_string_pretty(&package_json)?,
+        )?;
+
+        Ok(())
+    }
 }
 
 pub fn add_package_dependency(
@@ -59,5 +89,15 @@ pub fn add_package_dependency(
 ) -> Result<(), Box<dyn Error>> {
     let config = AddPackageDependency::new(&dependencies, dev_mode, &project_dir);
     config.add_dependency()?;
+    Ok(())
+}
+
+pub fn add_package_dependency_hardhat(
+    dependencies: &Vec<&str>,
+    dev_mode: bool,
+    project_dir: &PathBuf,
+) -> Result<(), Box<dyn Error>> {
+    let config = AddPackageDependency::new(&dependencies, dev_mode, &project_dir);
+    config.add_hardhat_dependency()?;
     Ok(())
 }

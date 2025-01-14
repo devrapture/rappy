@@ -10,3 +10,10 @@ pub fn get_dependency_version_map() -> HashMap<&'static str, &'static str> {
 
     map
 }
+
+pub fn get_dependency_hardhat_version_map()-> HashMap<&'static str, &'static str> {
+    let mut map = HashMap::new();
+    map.insert("prettier", "^3.4.2");
+
+    map
+}

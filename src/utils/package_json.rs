@@ -19,8 +19,17 @@ pub struct PackageJson {
 pub struct RootPackageJson {
     pub name: String,
     pub private: bool,
-    pub workspaces : Vec<String>,
+    pub workspaces: Vec<String>,
     pub dependencies: IndexMap<String, String>,
     #[serde(rename = "devDependencies")]
     pub dev_dependencies: IndexMap<String, String>,
+}
+#[derive(Debug, Deserialize, Serialize)]
+pub struct HardhatPackageJson {
+    pub name: String,
+    pub scripts: IndexMap<String, String>,
+    #[serde(rename = "devDependencies")]
+    pub dev_dependencies: IndexMap<String, String>,
+    pub dependencies: IndexMap<String, String>,
+
 }

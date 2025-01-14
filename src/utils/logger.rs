@@ -9,4 +9,8 @@ impl Logger {
     pub fn error(args: &str) {
         eprintln!("{}", args.red().bold());
     }
+
+    pub fn success(args: &str) {
+        println!("{}", args.green().bold());
+    }
 }

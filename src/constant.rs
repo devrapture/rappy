@@ -12,6 +12,7 @@ pub const YES_NO_OPTIONS: [&str; 2] = ["Yes", "No"];
 pub const EXTRAS_TEMPLATE_DIR: &str = "template/extras";
 pub const APP_ROUTER_TEMPLATE_DIR: &str = "template/extras/config/next-config-appdir.js";
 pub const TEMPLATE_DIR: &str = "template/root";
+pub const HARDHAT_TEMPLATE_DIR:&str = "template/hardhat";
 pub const OVERWRITE_OPTIONS: [&str; 2] = ["abort", "clear"];
 pub const CONFIRM_OPTIONS: [&str; 2] = ["Yes", "No"];
 pub const LAYOUT_FILE_TEMPLATE_DIR: &str = "template/extras/src/app/layout";
