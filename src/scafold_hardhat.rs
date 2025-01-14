@@ -1,4 +1,7 @@
-use std::{env, fs, path::{Path, PathBuf}};
+use std::{
+    env, fs,
+    path::{Path, PathBuf},
+};
 
 use anyhow::{Ok, Result};
 
@@ -19,7 +22,6 @@ impl ProjectConfig {
             template_dir,
         })
     }
-
 
     fn copy_directory(&self, source: &Path, destination: &Path) -> Result<()> {
         if !destination.try_exists().unwrap() {

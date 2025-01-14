@@ -31,5 +31,4 @@ pub struct HardhatPackageJson {
     #[serde(rename = "devDependencies")]
     pub dev_dependencies: IndexMap<String, String>,
     pub dependencies: IndexMap<String, String>,
-
 }

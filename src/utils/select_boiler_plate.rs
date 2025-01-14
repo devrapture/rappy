@@ -13,11 +13,7 @@ struct FileConfig {
 }
 
 impl FileConfig {
-    fn new(
-        project_dir: &PathBuf,
-        template_path: &str,
-        dest_path: &str,
-    ) -> Result<Self> {
+    fn new(project_dir: &PathBuf, template_path: &str, dest_path: &str) -> Result<Self> {
         Ok(Self {
             template_dir: env::current_dir()?.join(template_path),
             dest_path: project_dir.join("packages/frontend").join(dest_path),
@@ -41,10 +37,7 @@ impl FileConfig {
     }
 }
 
-pub fn select_layout_file(
-    project_dir: &PathBuf,
-    packages: &PackageInstallerMap,
-) -> Result<()> {
+pub fn select_layout_file(project_dir: &PathBuf, packages: &PackageInstallerMap) -> Result<()> {
     let mut file_config = FileConfig::new(
         project_dir,
         constant::LAYOUT_FILE_TEMPLATE_DIR,
@@ -55,10 +48,7 @@ pub fn select_layout_file(
     Ok(())
 }
 
-pub fn select_page_file(
-    project_dir: &PathBuf,
-    packages: &PackageInstallerMap,
-) -> Result<()> {
+pub fn select_page_file(project_dir: &PathBuf, packages: &PackageInstallerMap) -> Result<()> {
     let mut file_config = FileConfig::new(
         project_dir,
         "template/extras/src/pages/index",
@@ -69,10 +59,7 @@ pub fn select_page_file(
     Ok(())
 }
 
-pub fn select_app_file(
-    project_dir: &PathBuf,
-    packages: &PackageInstallerMap,
-) -> Result<()> {
+pub fn select_app_file(project_dir: &PathBuf, packages: &PackageInstallerMap) -> Result<()> {
     let mut file_config = FileConfig::new(
         project_dir,
         "template/extras/src/pages/_app",
@@ -83,10 +70,7 @@ pub fn select_app_file(
     Ok(())
 }
 
-pub fn select_index_file(
-    project_dir: &PathBuf,
-    packages: &PackageInstallerMap,
-) -> Result<()> {
+pub fn select_index_file(project_dir: &PathBuf, packages: &PackageInstallerMap) -> Result<()> {
     let mut file_config = FileConfig::new(
         project_dir,
         "template/extras/src/pages/index",

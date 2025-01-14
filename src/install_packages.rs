@@ -16,7 +16,10 @@ use crate::{
     },
 };
 
-pub fn install_frontend_packages(packages: &PackageInstallerMap, project_dir: &PathBuf) -> Result<()> {
+pub fn install_frontend_packages(
+    packages: &PackageInstallerMap,
+    project_dir: &PathBuf,
+) -> Result<()> {
     let current_dir = env::current_dir()?;
     Logger::info("Adding boilerplate...");
     for (k, v) in packages {
@@ -42,7 +45,8 @@ pub fn install_frontend_packages(packages: &PackageInstallerMap, project_dir: &P
                 "pages"
             })
             .join("index.module.css");
-        copy_file(&index_module_css, &index_module_css_dest).with_context(|| "unable to install Tailwind css")?;
+        copy_file(&index_module_css, &index_module_css_dest)
+            .with_context(|| "unable to install Tailwind css")?;
     }
 
     // Select necessary _app,index / layout,page files

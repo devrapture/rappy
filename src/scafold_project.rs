@@ -125,8 +125,12 @@ impl ProjectConfig {
 pub fn run(project_dir: &PathBuf, app_name: &String) -> Result<()> {
     let config = ProjectConfig::new(&project_dir, &app_name)?;
     config.handle_existing_directory()?;
-    config.copy_directory(&config.template_dir, &config.path).with_context(|| "Source directory does not exist")?;
-    config.rename_gitignore_file("_gitignore", ".gitignore").with_context(|| "_gitignore file does not exist")?;
+    config
+        .copy_directory(&config.template_dir, &config.path)
+        .with_context(|| "Source directory does not exist")?;
+    config
+        .rename_gitignore_file("_gitignore", ".gitignore")
+        .with_context(|| "_gitignore file does not exist")?;
     println!(
         "{} {}",
         config.name.cyan().bold(),
