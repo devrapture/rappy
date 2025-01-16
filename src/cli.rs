@@ -28,6 +28,7 @@ pub struct CLiConfig {
     pub theme: ColorfulTheme,
     pub project_name: String,
     pub styling_with_tailwind: bool,
+    pub install_project: bool,
     pub initialize_git: bool,
     pub app_router: bool,
     pub project_type: usize,
@@ -44,6 +45,7 @@ impl CLiConfig {
             theme: get_theme(),
             project_name: String::new(),
             styling_with_tailwind: false,
+            install_project: false,
             initialize_git: false,
             app_router: false,
             project_type: 0,
@@ -58,6 +60,7 @@ impl CLiConfig {
         let app_router = config.prompt_yes_no("Would you like to use Next.js App Router?")?;
         let project_type = config.choose_project_type()?;
         let project_dir = PathConfig::new(&project_name)?;
+        let install_project = config.prompt_yes_no("Should we run 'pnpm install' for you?")?;
         let initialize_git =
             config.prompt_yes_no("Should we initialize a Git repository and stage the changes?")?;
 
@@ -73,6 +76,7 @@ impl CLiConfig {
             theme: get_theme(),
             project_name,
             styling_with_tailwind,
+            install_project,
             initialize_git,
             app_router,
             project_type,

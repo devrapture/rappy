@@ -18,9 +18,10 @@ use install_packages::install_frontend_packages;
 use installers::{hardhat_prettier::config_hardhat, installer::PackageInstaller};
 use scafold_contract::{scafold_foundry, scafold_hardhat};
 use utils::{
-    logger::Logger,
-    rename_project::{rename_foundry_project, rename_frontend_project, rename_hardhat_project, rename_root_project},
+    install_packages::install_packages, logger::Logger, rename_project::{rename_foundry_project, rename_frontend_project, rename_hardhat_project, rename_root_project}
 };
+use owo_colors::OwoColorize;
+
 
 fn main() {
     if let Err(e) = run() {
@@ -48,8 +49,12 @@ fn run() -> Result<()> {
         },
         _ => unreachable!(),
     }
+    if config.install_project {
+        install_packages(&config.project_dir)?;
+    }
     if config.initialize_git {
         initialize_git(&config.project_dir)?;
     }
+    println!("\n✨ {} ✨ \n\n See the README.md file to get started \n\n {}⭐️✨\n\n      {}",String::from("Project created").cyan(), String::from("Give Rappy a star on Github if you're enjoying it! ").cyan(),String::from("https://github.com/devrapture/rappy").cyan());
     Ok(())
 }

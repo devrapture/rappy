@@ -7,3 +7,4 @@ pub mod packages;
 pub mod path;
 pub mod rename_project;
 pub mod select_boiler_plate;
+pub mod install_packages;
