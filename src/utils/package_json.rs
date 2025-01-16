@@ -32,3 +32,15 @@ pub struct HardhatPackageJson {
     pub dev_dependencies: IndexMap<String, String>,
     pub dependencies: IndexMap<String, String>,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct FoundryPackageJson {
+    pub name: String,
+    pub version:String,
+    pub description: String,
+    pub main:String,
+    pub scripts: IndexMap<String, String>,
+    pub keywords: Vec<String>,
+    pub author : String,
+    pub license: String
+}
