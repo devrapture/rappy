@@ -13,7 +13,7 @@ struct ProjectConfig {
 }
 
 impl ProjectConfig {
-    fn new(project_dir: &PathBuf, template_dir:&str) -> Result<Self> {
+    fn new(project_dir: &PathBuf, template_dir: &str) -> Result<Self> {
         let current_dir = env::current_dir()?;
         let template_dir = current_dir.join(template_dir);
         let contract_folder_path = project_dir.join("packages/contract");
@@ -50,7 +50,7 @@ impl ProjectConfig {
 }
 
 pub fn scafold_hardhat(project_dir: &PathBuf) -> Result<()> {
-    let config = ProjectConfig::new(&project_dir,constant::HARDHAT_TEMPLATE_DIR)?;
+    let config = ProjectConfig::new(&project_dir, constant::HARDHAT_TEMPLATE_DIR)?;
     config.copy_directory(&config.template_dir, &config.project_dir)?;
     config.rename_gitignore_file("_gitignore", ".gitignore")?;
     Logger::success("✅ Hardhart has been scaffolded successfully");
@@ -58,7 +58,7 @@ pub fn scafold_hardhat(project_dir: &PathBuf) -> Result<()> {
 }
 
 pub fn scafold_foundry(project_dir: &PathBuf) -> Result<()> {
-    let config = ProjectConfig::new(&project_dir,constant::FOUNDRY_TEMPLATE_DIR)?;
+    let config = ProjectConfig::new(&project_dir, constant::FOUNDRY_TEMPLATE_DIR)?;
     config.copy_directory(&config.template_dir, &config.project_dir)?;
     config.rename_gitignore_file("_gitignore", ".gitignore")?;
     config.rename_gitignore_file("_gitmodules", ".gitmodules")?;

@@ -1,10 +1,11 @@
 pub mod add_package_dependency;
+pub mod add_scripts;
 pub mod copy_file;
 pub mod get_theme;
+pub mod install_packages;
 pub mod logger;
 pub mod package_json;
 pub mod packages;
 pub mod path;
 pub mod rename_project;
 pub mod select_boiler_plate;
-pub mod install_packages;
