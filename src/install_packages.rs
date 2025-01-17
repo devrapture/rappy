@@ -38,7 +38,7 @@ pub fn install_frontend_packages(
     if !packages.get(&PackagesEnum::Tailwind).unwrap().in_use {
         let index_module_css = current_dir.join(constant::INDEX_MODULE_CSS_TEMPLATE_DIR);
         let index_module_css_dest = project_dir
-            .join("src")
+            .join("packages/frontend/src")
             .join(if packages.get(&PackagesEnum::AppRouter).unwrap().in_use {
                 "app"
             } else {

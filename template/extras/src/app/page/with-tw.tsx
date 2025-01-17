@@ -1,37 +1,66 @@
-import Link from "next/link";
+import { ArrowRight, Github, FileCode, Cpu, Zap } from 'lucide-react'
+import Link from 'next/link'
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
-        </div>
-      </div>
-    </main>
-  );
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+      <main className="container mx-auto px-4 py-16">
+        <header className="text-center mb-16">
+          <h1 className="text-6xl font-bold mb-4">Welcome to Rappy</h1>
+          <p className="text-xl text-gray-300">Your Web3 Project Launchpad</p>
+        </header>
+
+
+        <section className="mb-16">
+          <h2 className="text-3xl font-semibold mb-6">Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <FeatureCard 
+              icon={<FileCode className="w-8 h-8" />}
+              title="Next.js Frontend"
+              description="Modern React framework for building fast, SEO-friendly web applications"
+            />
+            <FeatureCard 
+              icon={<Cpu className="w-8 h-8" />}
+              title="Smart Contract Development"
+              description="Choose between Foundry or Hardhat for your Ethereum development needs"
+            />
+            <FeatureCard 
+              icon={<Zap className="w-8 h-8" />}
+              title="Developer Experience"
+              description="Includes pre-configured testing, formatting, and development scripts"
+            />
+          </div>
+        </section>
+
+        <section className="text-center">
+          <h2 className="text-3xl font-semibold mb-6">Ready to Build?</h2>
+          <div className="space-x-4">
+            <Link href="https://github.com/devrapture/rappy" target='_blank' className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+              <Github className="w-5 h-5 mr-2" />
+              GitHub
+            </Link>
+            <Link href="/docs" target='_blank' className="inline-flex items-center bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+              <ArrowRight className="w-5 h-5 mr-2" />
+              Documentation
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      <footer className="text-center py-8 text-gray-400">
+        <p>&copy; {new Date().getFullYear()} Rappy. All rights reserved.</p>
+      </footer>
+    </div>
+  )
 }
+
+function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+  return (
+    <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+      <div className="text-blue-400 mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-300">{description}</p>
+    </div>
+  )
+}
+
