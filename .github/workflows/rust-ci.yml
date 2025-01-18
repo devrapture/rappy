@@ -37,6 +37,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Build Release
+        run: cargo build --release
+
       - uses: actions/setup-node@v2
         with:
           node-version: '18.x'
