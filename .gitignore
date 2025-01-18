@@ -1,2 +1,6 @@
 /target
 .DS_Store
+
+# npm package binaries
+npm/rappy
+npm/rappy.exe

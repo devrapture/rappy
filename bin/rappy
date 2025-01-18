@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const path = require('path');
+
+const rappy = spawn(path.join(__dirname, '../npm/rappy'), process.argv.slice(2), {
+  stdio: 'inherit'
+});
+
+rappy.on('exit', process.exit); 
