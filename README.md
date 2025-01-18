@@ -1,5 +1,6 @@
 # 🚀 Rappy
 
+[![Rust CI](https://github.com/devrapture/rappy/actions/workflows/build.yml/badge.svg)](https://github.com/devrapture/rappy/actions/workflows/build.yml)
 [![Release](https://github.com/devrapture/rappy/actions/workflows/release.yml/badge.svg)](https://github.com/devrapture/rappy/actions/workflows/release.yml)
 [![NPM Publish](https://github.com/devrapture/rappy/actions/workflows/npm_publish.yml/badge.svg)](https://github.com/devrapture/rappy/actions/workflows/npm_publish.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

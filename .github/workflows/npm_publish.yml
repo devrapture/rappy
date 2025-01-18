@@ -1,11 +1,18 @@
 name: NPM Publish
 
-on:
-  release:
-    types: [created]
+on: 
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: true
+        type: string
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -21,16 +28,21 @@ jobs:
           mkdir -p bin
           
           # Download assets from the release
-          TAG=${GITHUB_REF#refs/tags/}
           assets_url=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
             | jq -r '.assets_url')
           
+          echo "Assets URL: $assets_url"
+          
           curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$assets_url" \
             | jq -r '.[].browser_download_url' \
             | while read url; do
+              echo "Downloading: $url"
               wget -P bin/ "$url"
             done
+          
+          # List downloaded files
+          ls -la bin/
           
           # Make binaries executable
           chmod +x bin/*
@@ -95,6 +107,12 @@ jobs:
       - name: Create package.json
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
+          if [ -z "$VERSION" ]; then
+            VERSION=${{ github.event.inputs.version }}
+          fi
+          
+          echo "Publishing version: $VERSION"
+          
           cat > package.json << EOF
           {
             "name": "create-rappy-app",
@@ -140,7 +158,16 @@ jobs:
           }
           EOF
 
+      - name: List files before publish
+        run: |
+          echo "Content of bin directory:"
+          ls -la bin/
+          echo "Content of root directory:"
+          ls -la
+
       - name: Publish to NPM
-        run: npm publish --access public
+        run: |
+          echo "Registry URL: $(npm config get registry)"
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
