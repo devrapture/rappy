@@ -16,6 +16,10 @@ pub fn add_script_for_frontend(project_root: &PathBuf, project_name: &String) ->
         "build".to_string(),
         format!(r#"lerna run build --scope "@{}/frontend""#, project_name),
     );
+    package_json.scripts.insert(
+        "copy-env".to_string(),
+        format!(r#"lerna run copy-env --scope "@{}/frontend""#, project_name),
+    );
 
     fs::write(
         &package_json_path,
