@@ -14,8 +14,10 @@ struct FileConfig {
 
 impl FileConfig {
     fn new(project_dir: &PathBuf, template_path: &str, dest_path: &str) -> Result<Self> {
+        let manifest_dir = env!("CARGO_MANIFEST_DIR");
+        let template_dir = PathBuf::from(manifest_dir).join(template_path);
         Ok(Self {
-            template_dir: env::current_dir()?.join(template_path),
+            template_dir: template_dir,
             dest_path: project_dir.join("packages/frontend").join(dest_path),
             file_name: String::from("base.tsx"),
         })
