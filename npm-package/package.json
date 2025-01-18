@@ -1,0 +1,40 @@
+{
+  "name": "create-rappy-app",
+  "version": "0.1.0",
+  "description": "A lightning-fast CLI tool for scaffolding Web3 projects",
+  "bin": {
+    "create-rappy-app": "bin/rappy.js"
+  },
+  "files": [
+    "bin/rappy.js",
+    "bin/rappy-macos",
+    "bin/rappy-macos-arm64",
+    "README.md",
+    "LICENSE"
+  ],
+  "os": ["darwin"],
+  "cpu": ["x64", "arm64"],
+  "engines": {
+    "node": ">=14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devrapture/rappy.git"
+  },
+  "keywords": [
+    "create-rappy-app",
+    "web3",
+    "cli",
+    "scaffold",
+    "ethereum",
+    "nextjs",
+    "foundry",
+    "hardhat"
+  ],
+  "author": "devrapture",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devrapture/rappy/issues"
+  },
+  "homepage": "https://github.com/devrapture/rappy#readme"
+} 
