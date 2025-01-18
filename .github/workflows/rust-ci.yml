@@ -83,6 +83,19 @@ jobs:
           name: binaries-${{ matrix.name }}
           path: bin/rappy-${{ matrix.name }}*
 
+      - name: Upload to GitHub Release
+        if: matrix.os == 'ubuntu-22.04'  # Only run once
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: CHANGELOG.md
+          files: |
+            bin/rappy-linux
+            bin/rappy-macos
+            bin/rappy-macos-arm64
+            bin/rappy-win.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+
   npm-publish:
     needs: publish
     runs-on: ubuntu-22.04
@@ -173,6 +186,8 @@ jobs:
           EOF
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ".npmrc"
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
