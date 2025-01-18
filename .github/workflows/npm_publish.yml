@@ -1,0 +1,146 @@
+name: NPM Publish
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download release assets
+        run: |
+          # Create bin directory
+          mkdir -p bin
+          
+          # Download assets from the release
+          TAG=${GITHUB_REF#refs/tags/}
+          assets_url=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+            | jq -r '.assets_url')
+          
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$assets_url" \
+            | jq -r '.[].browser_download_url' \
+            | while read url; do
+              wget -P bin/ "$url"
+            done
+          
+          # Make binaries executable
+          chmod +x bin/*
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Create wrapper script
+        run: |
+          cat > bin/rappy.js << 'EOF'
+          #!/usr/bin/env node
+
+          const { spawn } = require('child_process');
+          const path = require('path');
+          const os = require('os');
+          const fs = require('fs');
+
+          // Determine platform and architecture
+          const platform = os.platform();
+          const arch = os.arch();
+
+          // Map to binary name
+          let binaryName;
+          if (platform === 'win32') {
+            binaryName = 'rappy-windows.exe';
+          } else if (platform === 'darwin') {
+            binaryName = arch === 'arm64' ? 'rappy-macos-arm64' : 'rappy-macos';
+          } else {
+            binaryName = 'rappy-linux';
+          }
+
+          const binaryPath = path.join(__dirname, binaryName);
+
+          if (!fs.existsSync(binaryPath)) {
+            console.error(`Binary not found: ${binaryPath}`);
+            console.error('Platform:', platform, 'Architecture:', arch);
+            process.exit(1);
+          }
+
+          // Execute the binary with 'create' command by default
+          const args = ['create', ...process.argv.slice(2)];
+
+          const child = spawn(binaryPath, args, {
+            stdio: 'inherit'
+          });
+
+          child.on('error', (err) => {
+            console.error('Failed to start binary:', err);
+            process.exit(1);
+          });
+
+          child.on('exit', (code) => {
+            process.exit(code || 0);
+          });
+          EOF
+
+          chmod +x bin/rappy.js
+
+      - name: Create package.json
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          cat > package.json << EOF
+          {
+            "name": "create-rappy-app",
+            "version": "$VERSION",
+            "description": "A lightning-fast CLI tool for scaffolding Web3 projects",
+            "bin": {
+              "create-rappy-app": "bin/rappy.js"
+            },
+            "files": [
+              "bin/rappy.js",
+              "bin/rappy-linux",
+              "bin/rappy-macos",
+              "bin/rappy-macos-arm64",
+              "bin/rappy-windows.exe",
+              "README.md",
+              "LICENSE"
+            ],
+            "os": ["linux", "darwin", "win32"],
+            "cpu": ["x64", "arm64"],
+            "engines": {
+              "node": ">=14"
+            },
+            "repository": {
+              "type": "git",
+              "url": "git+https://github.com/${{ github.repository }}.git"
+            },
+            "keywords": [
+              "create-rappy-app",
+              "web3",
+              "cli",
+              "scaffold",
+              "ethereum",
+              "nextjs",
+              "foundry",
+              "hardhat"
+            ],
+            "author": "devrapture",
+            "license": "MIT",
+            "bugs": {
+              "url": "https://github.com/${{ github.repository }}/issues"
+            },
+            "homepage": "https://github.com/${{ github.repository }}#readme"
+          }
+          EOF
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
