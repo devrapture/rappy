@@ -87,7 +87,7 @@ pub fn initialize_git(project_dir: &PathBuf) -> Result<()> {
         return Ok(());
     }
     let is_inside = config.is_inside_git_repo()?;
-    if (is_inside && config.is_git_repo()) {
+    if is_inside && config.is_git_repo() {
         let over_write_git: bool = Select::with_theme(&theme).with_prompt(format!("{},Git is already initialized in {:?}. Initializing a new git repository would delete the previous history. Would you like to continue anyways?",String::from("Warning:").red().bold(), project_dir)).items(&YES_NO_OPTIONS).default(1).interact()? == 0;
         if !over_write_git {
             Logger::info("Skipping Git initialization.");

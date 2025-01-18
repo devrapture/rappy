@@ -14,8 +14,8 @@ struct ProjectConfig {
 
 impl ProjectConfig {
     fn new(project_dir: &PathBuf, template_dir: &str) -> Result<Self> {
-        let current_dir = env::current_dir()?;
-        let template_dir = current_dir.join(template_dir);
+        let manifest_dir = env!("CARGO_MANIFEST_DIR");
+        let template_dir = PathBuf::from(manifest_dir).join(template_dir);
         let contract_folder_path = project_dir.join("packages/contract");
         Ok(Self {
             project_dir: contract_folder_path,

@@ -11,7 +11,7 @@ pub mod installers;
 
 use std::process;
 
-use anyhow::{Ok, Result};
+use anyhow::{Context, Ok, Result};
 use cli::CLiConfig;
 use git::initialize_git;
 use install_packages::install_frontend_packages;
@@ -40,9 +40,9 @@ fn run() -> Result<()> {
     let use_packages = PackageInstaller::build_pkg_installer_map(&config.packages);
     scafold_project::run(&config.project_dir, &config.project_name)?;
     rename_frontend_project(&config.project_name)?;
-    rename_root_project(&config.project_name)?;
-    add_script_for_frontend(&config.project_dir, &config.project_name)?;
-    install_frontend_packages(&use_packages, &config.project_dir)?;
+    rename_root_project(&config.project_name).with_context(|| "Error renaming root project")?;
+    add_script_for_frontend(&config.project_dir, &config.project_name).with_context(|| "Error adding frontend script")?;
+    install_frontend_packages(&use_packages, &config.project_dir).with_context(|| "Error installing frontend packages")?;
     match config.project_type {
         0 => {
             scafold_foundry(&config.project_dir)?;

@@ -20,7 +20,6 @@ struct ProjectConfig {
 
 impl ProjectConfig {
     fn new(project_dir: &PathBuf, app_name: &String) -> Result<Self> {
-        let current_dir = env::current_dir()?;
         let name = project_dir
             .file_name()
             .map_or(String::from(app_name), |n| n.to_string_lossy().to_string());
@@ -29,7 +28,8 @@ impl ProjectConfig {
             ..ColorfulTheme::default()
         };
 
-        let template_dir = current_dir.join(constant::TEMPLATE_DIR);
+        let manifest_dir = env!("CARGO_MANIFEST_DIR");
+        let template_dir = PathBuf::from(manifest_dir).join(constant::TEMPLATE_DIR);
         Ok(Self {
             path: project_dir.to_path_buf(),
             name,
@@ -113,6 +113,7 @@ impl ProjectConfig {
         }
         Ok(())
     }
+    
     fn rename_gitignore_file(&self, old: &str, new: &str) -> Result<()> {
         let dir = self.path.join("packages/frontend");
         let old_file = dir.join(old);

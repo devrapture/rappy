@@ -20,7 +20,7 @@ pub fn install_frontend_packages(
     packages: &PackageInstallerMap,
     project_dir: &PathBuf,
 ) -> Result<()> {
-    let current_dir = env::current_dir()?;
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
     Logger::info("Adding boilerplate...");
     for (k, v) in packages {
         if v.in_use {
@@ -36,7 +36,8 @@ pub fn install_frontend_packages(
 
     // If no tailwind, select use css modules
     if !packages.get(&PackagesEnum::Tailwind).unwrap().in_use {
-        let index_module_css = current_dir.join(constant::INDEX_MODULE_CSS_TEMPLATE_DIR);
+
+        let index_module_css = PathBuf::from(manifest_dir).join(constant::INDEX_MODULE_CSS_TEMPLATE_DIR);
         let index_module_css_dest = project_dir
             .join("packages/frontend/src")
             .join(if packages.get(&PackagesEnum::AppRouter).unwrap().in_use {

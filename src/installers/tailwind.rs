@@ -14,9 +14,10 @@ pub struct TailwindConfig {
 
 impl TailwindConfig {
     pub fn new(project_path: &PathBuf) -> Result<Self> {
-        let current_dir = env::current_dir()?;
+        let manifest_dir = env!("CARGO_MANIFEST_DIR");
+        let template_dir = PathBuf::from(manifest_dir).join(constant::EXTRAS_TEMPLATE_DIR);
         Ok(Self {
-            template_root: current_dir.join(constant::EXTRAS_TEMPLATE_DIR),
+            template_root: template_dir,
             project_root: project_path.join("packages/frontend").to_path_buf(),
         })
     }
