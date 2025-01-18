@@ -41,8 +41,10 @@ fn run() -> Result<()> {
     scafold_project::run(&config.project_dir, &config.project_name)?;
     rename_frontend_project(&config.project_name)?;
     rename_root_project(&config.project_name).with_context(|| "Error renaming root project")?;
-    add_script_for_frontend(&config.project_dir, &config.project_name).with_context(|| "Error adding frontend script")?;
-    install_frontend_packages(&use_packages, &config.project_dir).with_context(|| "Error installing frontend packages")?;
+    add_script_for_frontend(&config.project_dir, &config.project_name)
+        .with_context(|| "Error adding frontend script")?;
+    install_frontend_packages(&use_packages, &config.project_dir)
+        .with_context(|| "Error installing frontend packages")?;
     match config.project_type {
         0 => {
             scafold_foundry(&config.project_dir)?;

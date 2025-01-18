@@ -113,7 +113,7 @@ impl ProjectConfig {
         }
         Ok(())
     }
-    
+
     fn rename_gitignore_file(&self, old: &str, new: &str) -> Result<()> {
         let dir = self.path.join("packages/frontend");
         let old_file = dir.join(old);

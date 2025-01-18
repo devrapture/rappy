@@ -14,7 +14,7 @@ impl AppRouterConfig {
         let manifest_dir = env!("CARGO_MANIFEST_DIR");
         let template_dir = PathBuf::from(manifest_dir).join(constant::APP_ROUTER_TEMPLATE_DIR);
         Ok(Self {
-            template_root:template_dir,
+            template_root: template_dir,
             project_root: project_dir.join("packages/frontend/next.config.js"),
         })
     }
