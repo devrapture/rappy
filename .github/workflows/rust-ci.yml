@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    if: github.event_name != 'release'
 
     steps:
     - name: Check out code
@@ -32,9 +33,9 @@ jobs:
       run: cargo fmt -- --check
 
   publish:
-    needs: build
     if: github.event_name == 'release' && github.event.action == 'created'
     strategy:
+      fail-fast: false  # Continue with other platforms if one fails
       matrix:
         include:
           - os: ubuntu-22.04
@@ -62,8 +63,12 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
+      - name: Create bin directory
+        run: mkdir -p bin
+      
       - name: Build Release Binary
         run: |
+          rustup target add ${{ matrix.target }}
           cargo build --release --target ${{ matrix.target }}
       
       - name: Prepare Binary (Unix)
@@ -82,22 +87,19 @@ jobs:
         with:
           name: binaries-${{ matrix.name }}
           path: bin/rappy-${{ matrix.name }}*
+          if-no-files-found: error
 
       - name: Upload to GitHub Release
-        if: matrix.os == 'ubuntu-22.04'  # Only run once
+        if: matrix.os == 'ubuntu-22.04'
         uses: softprops/action-gh-release@v1
         with:
-          body_path: CHANGELOG.md
-          files: |
-            bin/rappy-linux
-            bin/rappy-macos
-            bin/rappy-macos-arm64
-            bin/rappy-win.exe
+          files: bin/rappy-*
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   npm-publish:
     needs: publish
+    if: github.event_name == 'release' && github.event.action == 'created'
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -107,51 +109,28 @@ jobs:
         with:
           path: bin
 
+      - name: Debug artifacts
+        run: |
+          echo "Content of bin directory:"
+          ls -la bin/
+          find bin -type f
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Prepare package files
+      - name: Move binaries and prepare files
         run: |
-          # Move binaries to correct location
+          # Ensure bin directory exists
           mkdir -p bin
-          mv binaries-*/* bin/
-          
-          # Update package.json version
-          VERSION=${GITHUB_REF#refs/tags/v}
-          npm version $VERSION --no-git-tag-version
-          
-          # Ensure binaries are executable
-          chmod +x bin/*
-          
-          # Create minimal package.json if it doesn't exist
-          if [ ! -f package.json ]; then
-            cat > package.json << EOF
-            {
-              "name": "@devrapture/rappy",
-              "version": "0.0.0",
-              "description": "A lightning-fast CLI tool for scaffolding Web3 projects",
-              "bin": {
-                "rappy": "bin/rappy.js"
-              },
-              "files": [
-                "bin",
-                "README.md",
-                "LICENSE"
-              ],
-              "os": ["linux", "darwin", "win32"],
-              "cpu": ["x64", "arm64"],
-              "engines": {
-                "node": ">=14"
-              }
-            }
-            EOF
-          fi
-          
+
+          # Move binaries from artifact directories to bin
+          find bin -type f -name "rappy-*" -exec mv {} bin/ \;
+
           # Create the wrapper script
-          cat > bin/rappy.js << EOF
+          cat > bin/rappy.js << 'EOF'
           #!/usr/bin/env node
 
           const { spawn } = require('child_process');
@@ -185,9 +164,43 @@ jobs:
           });
           EOF
 
+          chmod +x bin/rappy.js
+
+          # Debug final bin contents
+          echo "Final bin directory contents:"
+          ls -la bin/
+
+      - name: Update package.json
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if [ ! -f package.json ]; then
+            cat > package.json << EOF
+            {
+              "name": "@devrapture/rappy",
+              "version": "$VERSION",
+              "description": "A lightning-fast CLI tool for scaffolding Web3 projects",
+              "bin": {
+                "rappy": "bin/rappy.js"
+              },
+              "files": [
+                "bin",
+                "README.md",
+                "LICENSE"
+              ],
+              "os": ["linux", "darwin", "win32"],
+              "cpu": ["x64", "arm64"],
+              "engines": {
+                "node": ">=14"
+              }
+            }
+            EOF
+          else
+            npm version $VERSION --no-git-tag-version --allow-same-version
+          fi
+
       - name: Publish to npm
         run: |
-          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ".npmrc"
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
           npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}m
