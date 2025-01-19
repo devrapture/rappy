@@ -1,15 +1,10 @@
 name: NPM Publish
 
 on: 
-  push:
-    tags:
-      - "v*"
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (e.g., 1.0.0)'
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -18,22 +13,48 @@ permissions:
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download release assets
+      - name: Wait for release assets
         run: |
           # Create bin directory
           mkdir -p bin
           
-          # Download assets from the release
-          assets_url=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
-            | jq -r '.assets_url')
+          MAX_RETRIES=10
+          RETRY_COUNT=0
+          SLEEP_TIME=30
           
-          echo "Assets URL: $assets_url"
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            # Get latest release info
+            RELEASE_INFO=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/latest")
+            
+            # Get assets URL and count
+            assets_url=$(echo "$RELEASE_INFO" | jq -r '.assets_url')
+            assets_count=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$assets_url" | jq '. | length')
+            
+            echo "Found $assets_count assets"
+            
+            # Check if we have all expected assets (4 binaries)
+            if [ "$assets_count" -ge 4 ]; then
+              echo "All assets are available. Proceeding with download..."
+              break
+            fi
+            
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Assets not ready yet. Attempt $RETRY_COUNT of $MAX_RETRIES. Waiting ${SLEEP_TIME}s..."
+            sleep $SLEEP_TIME
+          done
           
+          if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+            echo "Error: Timed out waiting for release assets"
+            exit 1
+          fi
+          
+          # Download the assets
           curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$assets_url" \
             | jq -r '.[].browser_download_url' \
             | while read url; do
@@ -106,10 +127,10 @@ jobs:
 
       - name: Create package.json
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          if [ -z "$VERSION" ]; then
-            VERSION=${{ github.event.inputs.version }}
-          fi
+          # Get version from the latest release
+          VERSION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+            | jq -r '.tag_name' | sed 's/^v//')
           
           echo "Publishing version: $VERSION"
           
