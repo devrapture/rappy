@@ -1,6 +1,7 @@
-use std::{env, path::PathBuf};
+use std::path::PathBuf;
 
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
+use include_dir::{include_dir, Dir};
 use owo_colors::OwoColorize;
 
 use crate::{
@@ -16,11 +17,12 @@ use crate::{
     },
 };
 
+static PROJECT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR");
+
 pub fn install_frontend_packages(
     packages: &PackageInstallerMap,
     project_dir: &PathBuf,
 ) -> Result<()> {
-    let manifest_dir = env!("CARGO_MANIFEST_DIR");
     Logger::info("Adding boilerplate...");
     for (k, v) in packages {
         if v.in_use {
@@ -36,8 +38,10 @@ pub fn install_frontend_packages(
 
     // If no tailwind, select use css modules
     if !packages.get(&PackagesEnum::Tailwind).unwrap().in_use {
-        let index_module_css =
-            PathBuf::from(manifest_dir).join(constant::INDEX_MODULE_CSS_TEMPLATE_DIR);
+        let index_module_css_dir = PROJECT_DIR
+            .get_dir(constant::INDEX_MODULE_CSS_TEMPLATE_DIR)
+            .ok_or_else(|| anyhow!("index module css  directory not found"))?;
+        let index_module_css = PathBuf::from(index_module_css_dir.path());
         let index_module_css_dest = project_dir
             .join("packages/frontend/src")
             .join(if packages.get(&PackagesEnum::AppRouter).unwrap().in_use {

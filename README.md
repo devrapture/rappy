@@ -33,13 +33,16 @@ Rappy aims to solve this by providing:
 
 ```bash
 # Create a new project
-rappy create <project-name>
-
-# Create with template
-rappy create <project-name> --template <template-name>
+rappy create rappy-app
 
 # Add dependencies
 pnpm add <package> --filter <workspace>
+
+# E.g for frontend packages
+pnpm add wagmi --filter frontend
+
+# E.g for contract packages
+pnpm add copyfiles --filter contract
 ```
 ## 🤝 Contributing
 
