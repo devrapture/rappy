@@ -14,19 +14,20 @@ use crate::constant;
 
 static PROJECT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR");
 
-struct ProjectConfig{
+struct ProjectConfig {
     path: PathBuf,
     name: String,
     theme: ColorfulTheme,
     // Instead of storing a PathBuf, store a reference to the embedded directory.
-    template_dir: &'static Dir<'static>, 
+    template_dir: &'static Dir<'static>,
 }
 
 impl ProjectConfig {
     fn new(project_dir: &PathBuf, app_name: &String) -> Result<Self> {
-        let name = project_dir
-            .file_name()
-            .map_or_else(|| String::from(app_name), |n| n.to_string_lossy().to_string());
+        let name = project_dir.file_name().map_or_else(
+            || String::from(app_name),
+            |n| n.to_string_lossy().to_string(),
+        );
         let theme = ColorfulTheme {
             values_style: Style::new().cyan().dim(),
             ..ColorfulTheme::default()
@@ -110,10 +111,7 @@ impl ProjectConfig {
         // Copy all files directly contained in this directory.
         for file in source.files() {
             // Compute the path relative to the embedded source directory.
-            let relative_path = file
-                .path()
-                .strip_prefix(prefix)
-                .unwrap_or(file.path());
+            let relative_path = file.path().strip_prefix(prefix).unwrap_or(file.path());
             let dest_path = destination.join(relative_path);
             if let Some(parent) = dest_path.parent() {
                 fs::create_dir_all(parent)?;
@@ -122,10 +120,7 @@ impl ProjectConfig {
         }
         // Then, recursively handle subdirectories.
         for subdir in source.dirs() {
-            let relative_path = subdir
-                .path()
-                .strip_prefix(prefix)
-                .unwrap_or(subdir.path());
+            let relative_path = subdir.path().strip_prefix(prefix).unwrap_or(subdir.path());
             let dest_path = destination.join(relative_path);
             fs::create_dir_all(&dest_path)?;
             // Use the destination for the current subdirectory.
