@@ -11,6 +11,7 @@ env:
   RUST_BACKTRACE: 1
   RUSTFLAGS: "-C debuginfo=0"
   CARGO_NET_GIT_FETCH_WITH_CLI: true
+  CARGO_INCREMENTAL: 0  # Disable incremental compilation
 
 jobs:
   build:
@@ -18,13 +19,13 @@ jobs:
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v3  # Updated to v3
+      uses: actions/checkout@v3
 
     - name: Configure swap space
       run: |
         free -m
         sudo swapoff -a
-        sudo fallocate -l 4G /swapfile
+        sudo fallocate -l 8G /swapfile  # Increased to 8GB
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile
@@ -35,7 +36,7 @@ jobs:
       with:
         toolchain: stable
         override: true
-        components: rustfmt  # Explicitly specify rustfmt for formatting checks
+        components: rustfmt
 
     - name: Cache dependencies
       uses: actions/cache@v3
@@ -47,10 +48,10 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Build
-      run: cargo build --verbose --jobs 2
+      run: cargo build --verbose  # Removed --jobs 2
 
     - name: Run tests
-      run: cargo test --verbose --jobs 2
+      run: cargo test --verbose  # Removed --jobs 2
 
     - name: Check formatting
       run: cargo fmt -- --check
