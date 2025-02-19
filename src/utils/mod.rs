@@ -1,6 +1,5 @@
 pub mod add_package_dependency;
 pub mod add_scripts;
-pub mod copy_file;
 pub mod get_theme;
 pub mod install_packages;
 pub mod logger;
