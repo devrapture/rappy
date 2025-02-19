@@ -23,7 +23,7 @@ impl Display for ProjectType {
         }
     }
 }
-
+#[allow(dead_code)]
 pub struct CLiConfig {
     pub theme: ColorfulTheme,
     pub project_name: String,

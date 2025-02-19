@@ -6,7 +6,7 @@ use std::{
 use anyhow::{Ok, Result};
 
 use crate::{constant, utils::logger::Logger};
-
+#[allow(dead_code)]
 struct ProjectConfig {
     project_dir: PathBuf,
     template_dir: PathBuf,
@@ -49,6 +49,7 @@ impl ProjectConfig {
     }
 }
 
+#[allow(dead_code)]
 pub fn scafold_hardhat(project_dir: &PathBuf) -> Result<()> {
     let config = ProjectConfig::new(&project_dir)?;
     config.copy_directory(&config.template_dir, &config.project_dir)?;
