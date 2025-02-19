@@ -35,6 +35,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+    
+      - name: Workaround for curl 8.0 network errors
+        run: |
+          if rustc +stable --version --verbose | grep -q '^release: 1\.7[01]\.'; then
+            echo 'CARGO_HTTP_MULTIPLEXING=false' >> $GITHUB_ENV
+          fi
 
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
