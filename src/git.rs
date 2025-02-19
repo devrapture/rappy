@@ -55,17 +55,6 @@ impl Git {
         Ok("main".to_string())
     }
 
-    pub fn get_git_version(&self) -> Result<()> {
-        let output = Command::new("git").arg("--version").output()?;
-        let version_string = String::from_utf8_lossy(&output.stderr)
-            .trim()
-            .split_whitespace()
-            .nth(2)
-            .unwrap()
-            .to_string();
-        Version::parse(&version_string)?;
-        Ok(())
-    }
 }
 
 pub fn initialize_git(project_dir: &PathBuf) -> Result<()> {
