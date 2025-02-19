@@ -54,7 +54,6 @@ impl Git {
         }
         Ok("main".to_string())
     }
-
 }
 
 pub fn initialize_git(project_dir: &PathBuf) -> Result<()> {
