@@ -1,10 +1,10 @@
-use std::{env, path::PathBuf};
+use std::{env, fs, path::{Path, PathBuf}};
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use crate::{constant, installers::installer::PackageInstallerMap};
 
-use super::{copy_file::copy_file, packages::PackagesEnum};
+use super::packages::PackagesEnum;
 
 struct FileConfig {
     template_dir: PathBuf,
@@ -33,8 +33,13 @@ impl FileConfig {
         .to_owned();
     }
 
-    fn copy(&self) -> Result<()> {
-        copy_file(&self.template_dir.join(&self.file_name), &self.dest_path)?;
+    pub fn copy_file(source: &Path, destination: &Path) -> Result<()> {
+        if let Some(parent) = destination.parent() {
+            fs::create_dir_all(parent)
+                .with_context(|| format!("Failed to create directory: {:?}", parent))?;
+        }
+        fs::copy(source, destination)
+            .with_context(|| format!("Failed to copy file from {:?} to {:?}", source, destination))?;
         Ok(())
     }
 }
@@ -46,7 +51,10 @@ pub fn select_layout_file(project_dir: &PathBuf, packages: &PackageInstallerMap)
         "src/app/layout.tsx",
     )?;
     file_config.determine_file_name(&packages);
-    file_config.copy()?;
+    FileConfig::copy_file(
+        &file_config.template_dir.join(&file_config.file_name),
+        &file_config.dest_path,
+    )?;
     Ok(())
 }
 
@@ -57,7 +65,10 @@ pub fn select_page_file(project_dir: &PathBuf, packages: &PackageInstallerMap) -
         "src/app/page.tsx",
     )?;
     file_config.determine_file_name(packages);
-    file_config.copy()?;
+    FileConfig::copy_file(
+        &file_config.template_dir.join(&file_config.file_name),
+        &file_config.dest_path,
+    )?;
     Ok(())
 }
 
@@ -68,7 +79,10 @@ pub fn select_app_file(project_dir: &PathBuf, packages: &PackageInstallerMap) ->
         "src/pages/_app.tsx",
     )?;
     file_config.determine_file_name(packages);
-    file_config.copy()?;
+    FileConfig::copy_file(
+        &file_config.template_dir.join(&file_config.file_name),
+        &file_config.dest_path,
+    )?;
     Ok(())
 }
 
@@ -79,6 +93,9 @@ pub fn select_index_file(project_dir: &PathBuf, packages: &PackageInstallerMap) 
         "src/pages/index.tsx",
     )?;
     file_config.determine_file_name(packages);
-    file_config.copy()?;
+    FileConfig::copy_file(
+        &file_config.template_dir.join(&file_config.file_name),
+        &file_config.dest_path,
+    )?;
     Ok(())
 }

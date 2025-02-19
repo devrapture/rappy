@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-
+use std::fs;
 use anyhow::{anyhow, Context, Result};
 use include_dir::{include_dir, Dir};
 use owo_colors::OwoColorize;
@@ -8,7 +8,6 @@ use crate::{
     constant,
     installers::installer::PackageInstallerMap,
     utils::{
-        copy_file::copy_file,
         logger::Logger,
         packages::PackagesEnum,
         select_boiler_plate::{
@@ -38,10 +37,13 @@ pub fn install_frontend_packages(
 
     // If no tailwind, select use css modules
     if !packages.get(&PackagesEnum::Tailwind).unwrap().in_use {
-        let index_module_css_dir = PROJECT_DIR
-            .get_dir(constant::INDEX_MODULE_CSS_TEMPLATE_DIR)
-            .ok_or_else(|| anyhow!("index module css  directory not found"))?;
-        let index_module_css = PathBuf::from(index_module_css_dir.path());
+        // Retrieve the embedded file.
+        let index_module_css_file = PROJECT_DIR
+            .get_file(constant::INDEX_MODULE_CSS_TEMPLATE_DIR)
+            .ok_or_else(|| anyhow!("index module css file not found"))
+            .with_context(|| "index module css file not found")?;
+        
+        // Define the destination path.
         let index_module_css_dest = project_dir
             .join("packages/frontend/src")
             .join(if packages.get(&PackagesEnum::AppRouter).unwrap().in_use {
@@ -50,17 +52,30 @@ pub fn install_frontend_packages(
                 "pages"
             })
             .join("index.module.css");
-        copy_file(&index_module_css, &index_module_css_dest)
-            .with_context(|| "unable to install Tailwind css")?;
+        
+        // Ensure the destination directory exists.
+        if let Some(parent) = index_module_css_dest.parent() {
+            fs::create_dir_all(parent)
+                .with_context(|| format!("unable to create directory at {:?}", parent))?;
+        }
+        
+        // Check if the file already exists to avoid overwriting.
+        if index_module_css_dest.exists() {
+            return Err(anyhow!("file already exists at {:?}", index_module_css_dest));
+        }
+        
+        // Write the file's contents to the destination.
+        fs::write(&index_module_css_dest, index_module_css_file.contents())
+            .with_context(|| "unable to write index module css")?;
     }
 
     // Select necessary _app,index / layout,page files
     if packages.get(&PackagesEnum::AppRouter).unwrap().in_use {
-        select_layout_file(&project_dir, &packages)?;
-        select_page_file(&project_dir, &packages)?;
+        select_layout_file(&project_dir, &packages).with_context(|| "select layout file failed")?;
+        select_page_file(&project_dir, &packages).with_context(|| "select page file failed")?;
     } else {
         select_app_file(&project_dir, &packages)?;
-        select_index_file(&project_dir, &packages)?;
+        select_index_file(&project_dir, &packages).with_context(|| "select index file failed")?;
     }
 
     Ok(())
