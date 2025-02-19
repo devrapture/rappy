@@ -1,8 +1,8 @@
-use std::path::PathBuf;
-use std::fs;
 use anyhow::{anyhow, Context, Result};
 use include_dir::{include_dir, Dir};
 use owo_colors::OwoColorize;
+use std::fs;
+use std::path::PathBuf;
 
 use crate::{
     constant,
@@ -42,7 +42,7 @@ pub fn install_frontend_packages(
             .get_file(constant::INDEX_MODULE_CSS_TEMPLATE_DIR)
             .ok_or_else(|| anyhow!("index module css file not found"))
             .with_context(|| "index module css file not found")?;
-        
+
         // Define the destination path.
         let index_module_css_dest = project_dir
             .join("packages/frontend/src")
@@ -52,18 +52,21 @@ pub fn install_frontend_packages(
                 "pages"
             })
             .join("index.module.css");
-        
+
         // Ensure the destination directory exists.
         if let Some(parent) = index_module_css_dest.parent() {
             fs::create_dir_all(parent)
                 .with_context(|| format!("unable to create directory at {:?}", parent))?;
         }
-        
+
         // Check if the file already exists to avoid overwriting.
         if index_module_css_dest.exists() {
-            return Err(anyhow!("file already exists at {:?}", index_module_css_dest));
+            return Err(anyhow!(
+                "file already exists at {:?}",
+                index_module_css_dest
+            ));
         }
-        
+
         // Write the file's contents to the destination.
         fs::write(&index_module_css_dest, index_module_css_file.contents())
             .with_context(|| "unable to write index module css")?;

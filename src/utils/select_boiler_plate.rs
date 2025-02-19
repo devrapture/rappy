@@ -1,4 +1,7 @@
-use std::{env, fs, path::{Path, PathBuf}};
+use std::{
+    env, fs,
+    path::{Path, PathBuf},
+};
 
 use anyhow::{Context, Result};
 
@@ -38,8 +41,9 @@ impl FileConfig {
             fs::create_dir_all(parent)
                 .with_context(|| format!("Failed to create directory: {:?}", parent))?;
         }
-        fs::copy(source, destination)
-            .with_context(|| format!("Failed to copy file from {:?} to {:?}", source, destination))?;
+        fs::copy(source, destination).with_context(|| {
+            format!("Failed to copy file from {:?} to {:?}", source, destination)
+        })?;
         Ok(())
     }
 }

@@ -60,32 +60,38 @@ impl TailwindConfig {
 
     pub fn copy_file(&self, src_relative_path: &str, dest_relative_path: &str) -> Result<()> {
         // Get the file from the embedded directory.
-        let file = self.template_root
+        let file = self
+            .template_root
             .join(src_relative_path)
             .to_str()
             .and_then(|path| PROJECT_DIR.get_file(path))
-            .ok_or_else(|| anyhow!("Source file '{}' not found in template directory", src_relative_path))?;
-    
+            .ok_or_else(|| {
+                anyhow!(
+                    "Source file '{}' not found in template directory",
+                    src_relative_path
+                )
+            })?;
+
         // Build the destination path.
         let destination = self.project_root.join(dest_relative_path);
-    
+
         // Create parent directories if needed.
         if let Some(parent) = destination.parent() {
             fs::create_dir_all(parent)
                 .with_context(|| format!("Failed to create parent directory: {:?}", parent))?;
         }
-    
+
         // Write the embedded file's contents to the destination.
         fs::write(&destination, file.contents())
             .with_context(|| format!("Failed to write file to destination: {:?}", destination))?;
-    
+
         Ok(())
     }
 }
 
 pub fn install(project_path: &PathBuf) -> Result<()> {
-    let config_styling = TailwindConfig::new(project_path)
-        .with_context(|| "Failed to create TailwindConfig")?;
+    let config_styling =
+        TailwindConfig::new(project_path).with_context(|| "Failed to create TailwindConfig")?;
 
     config_styling
         .add_package_dependency()
