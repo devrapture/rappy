@@ -37,13 +37,14 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      # --- Added step (Option 3) ---
+      # --- Fix: Safe lock file removal (Windows) ---
       - name: Remove lock file and clean (Windows)
         if: runner.os == 'Windows'
+        shell: bash
         run: |
-          del .cargo-lock || echo "No .cargo-lock file to remove"
+          rm -f .cargo-lock || echo "No .cargo-lock file to remove"
           cargo clean
-      # -----------------------------
+      # ----------------------------------------------
 
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
