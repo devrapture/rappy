@@ -49,6 +49,8 @@ jobs:
       - name: Prepare binary (Windows)
         if: runner.os == 'Windows'
         run: |
+          cargo clean
+          rm -rf target
           mkdir dist
           copy target\${{ matrix.target }}\release\rappy.exe dist\rappy-${{ matrix.name }}.exe
 
