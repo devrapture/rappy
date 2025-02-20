@@ -37,6 +37,14 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      # --- Added step (Option 3) ---
+      - name: Remove lock file and clean (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          del .cargo-lock || echo "No .cargo-lock file to remove"
+          cargo clean
+      # -----------------------------
+
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
@@ -62,4 +70,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
