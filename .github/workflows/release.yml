@@ -10,6 +10,7 @@ jobs:
     name: Release
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - os: ubuntu-latest
@@ -49,8 +50,6 @@ jobs:
       - name: Prepare binary (Windows)
         if: runner.os == 'Windows'
         run: |
-          cargo clean
-          rm -rf target
           mkdir dist
           copy target\${{ matrix.target }}\release\rappy.exe dist\rappy-${{ matrix.name }}.exe
 
@@ -63,3 +62,4 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
