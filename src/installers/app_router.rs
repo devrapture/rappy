@@ -5,7 +5,7 @@ use anyhow::{anyhow, Context, Result};
 
 use crate::constant;
 
-static PROJECT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR");
+static PROJECT_DIR: Dir = include_dir!("template");
 
 pub struct AppRouterConfig {
     pub template_file: &'static include_dir::File<'static>, // Use the embedded file directly

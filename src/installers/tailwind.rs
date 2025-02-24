@@ -8,7 +8,7 @@ use crate::{
     utils::{add_package_dependency::add_package_dependency, package_json::PackageJson},
 };
 
-static PROJECT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR");
+static PROJECT_DIR: Dir = include_dir!("template");
 
 pub struct TailwindConfig {
     pub template_root: PathBuf,

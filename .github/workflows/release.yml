@@ -10,7 +10,6 @@ jobs:
     name: Release
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         include:
           - os: ubuntu-latest
@@ -36,15 +35,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-
-      # --- Fix: Safe lock file removal (Windows) ---
-      - name: Remove lock file and clean (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          rm -f .cargo-lock || echo "No .cargo-lock file to remove"
-          cargo clean
-      # ----------------------------------------------
 
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}

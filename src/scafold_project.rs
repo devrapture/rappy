@@ -12,7 +12,7 @@ use owo_colors::OwoColorize;
 
 use crate::constant;
 
-static PROJECT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR");
+static PROJECT_DIR: Dir = include_dir!("template");
 
 struct ProjectConfig {
     path: PathBuf,

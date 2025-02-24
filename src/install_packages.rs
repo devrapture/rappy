@@ -16,7 +16,7 @@ use crate::{
     },
 };
 
-static PROJECT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR");
+static PROJECT_DIR: Dir = include_dir!("template");
 
 pub fn install_frontend_packages(
     packages: &PackageInstallerMap,
@@ -74,7 +74,7 @@ pub fn install_frontend_packages(
 
     // Select necessary _app,index / layout,page files
     if packages.get(&PackagesEnum::AppRouter).unwrap().in_use {
-        select_layout_file(&project_dir, &packages).with_context(|| "select layout file failed")?;
+        select_layout_file(&project_dir, &packages)?;
         select_page_file(&project_dir, &packages).with_context(|| "select page file failed")?;
     } else {
         select_app_file(&project_dir, &packages)?;
