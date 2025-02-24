@@ -1,7 +1,7 @@
-use std::fs;
-use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 use include_dir::{include_dir, Dir};
+use std::fs;
+use std::path::{Path, PathBuf};
 
 use crate::utils::logger::Logger;
 
@@ -47,8 +47,12 @@ impl ProjectConfig {
     fn rename_file(&self, old: &str, new: &str) -> Result<()> {
         let old_file = self.project_dir.join(old);
         let new_file = self.project_dir.join(new);
-        fs::rename(&old_file, &new_file)
-            .with_context(|| format!("Failed to rename file from {:?} to {:?}", old_file, new_file))?;
+        fs::rename(&old_file, &new_file).with_context(|| {
+            format!(
+                "Failed to rename file from {:?} to {:?}",
+                old_file, new_file
+            )
+        })?;
         Ok(())
     }
 }
