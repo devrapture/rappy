@@ -33,7 +33,7 @@ Rappy aims to solve this by providing:
 
 ```bash
 # Create a new project
-rappy create rappy-app
+pnpm create rappy-app
 
 # Add dependencies
 pnpm add <package> --filter <workspace>

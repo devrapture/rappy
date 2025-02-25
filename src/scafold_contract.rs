@@ -6,7 +6,6 @@ use std::path::{Path, PathBuf};
 use crate::utils::logger::Logger;
 
 // Embed the entire template directories for Hardhat and Foundry.
-// Adjust the paths below to point to the correct locations relative to your Cargo.toml.
 static HARDHAT_TEMPLATE: Dir = include_dir!("$CARGO_MANIFEST_DIR/template/hardhat");
 static FOUNDRY_TEMPLATE: Dir = include_dir!("$CARGO_MANIFEST_DIR/template/foundry");
 
@@ -24,20 +23,32 @@ impl ProjectConfig {
         }
     }
 
-    /// Copies all files from an embedded template directory to the destination,
-    /// preserving the directory structure.
+    /// Recursively copies all files and directories from an embedded template directory
+    /// to the destination, preserving the directory structure.
     fn copy_embedded_dir(template: &Dir, destination: &Path) -> Result<()> {
-        // Iterate over all files (recursively) in the embedded directory.
-        for file in template.files() {
-            // The file's path is relative to the embedded directory root.
-            let rel_path = file.path();
-            let dest_path = destination.join(rel_path);
-            if let Some(parent) = dest_path.parent() {
-                fs::create_dir_all(parent)
-                    .with_context(|| format!("Failed to create directory: {:?}", parent))?;
+        // Iterate over all entries (files and directories) in the embedded directory.
+        for entry in template.entries() {
+            match entry {
+                // If the entry is a file, write it to the destination.
+                include_dir::DirEntry::File(file) => {
+                    let rel_path = file.path();
+                    let dest_path = destination.join(rel_path);
+                    if let Some(parent) = dest_path.parent() {
+                        fs::create_dir_all(parent)
+                            .with_context(|| format!("Failed to create directory: {:?}", parent))?;
+                    }
+                    fs::write(&dest_path, file.contents())
+                        .with_context(|| format!("Failed to write file: {:?}", dest_path))?;
+                }
+                // If the entry is a directory, recursively copy its contents.
+                include_dir::DirEntry::Dir(dir) => {
+                    let rel_path = dir.path();
+                    let dest_path = destination.join(rel_path);
+                    fs::create_dir_all(&dest_path)
+                        .with_context(|| format!("Failed to create directory: {:?}", dest_path))?;
+                    Self::copy_embedded_dir(dir, &dest_path)?;
+                }
             }
-            fs::write(&dest_path, file.contents())
-                .with_context(|| format!("Failed to write file: {:?}", dest_path))?;
         }
         Ok(())
     }
