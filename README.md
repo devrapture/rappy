@@ -44,6 +44,15 @@ pnpm add wagmi --filter frontend
 # E.g for contract packages
 pnpm add copyfiles --filter contract
 ```
+
+## Demo
+<div align="center">
+  <a href="https://youtu.be/PxsUDz1tWB4">
+    <img src="https://img.youtube.com/vi/PxsUDz1tWB4/0.jpg" alt="Rappy Demo Video" style="width:100%;">
+  </a>
+  <br>
+  <p><strong>Watch the Rappy Demo Video</strong></p>
+</div>
 ## 🤝 Contributing
 
 We welcome contributions! 
