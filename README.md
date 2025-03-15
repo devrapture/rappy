@@ -81,4 +81,4 @@ Special thanks to:
 Need help? Here's how to get support:
 
 - Open an [Issue](https://github.com/devrapture/rappy/issues)
-- Check our [Documentation](https://docs.rappy.dev)
+- Check our [Website](rappy-website.vercel.app)
